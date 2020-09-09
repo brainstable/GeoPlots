@@ -1,0 +1,44 @@
+
+html, body {
+    margin: 0;
+    padding: 0;
+  }
+
+  html, body {
+    height: 100%;
+    width: 100%;
+  }
+
+h3 {
+    
+    color: black;
+    text-align: center;
+    background-color: gainsboro;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+#title {
+    float: top;
+}
+
+#map {
+    height: 100vh;
+}
+
+
+
+.info {
+    padding: 6px 8px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+}
+.info h4 {
+    margin: 0 0 5px;
+    color: #777;
+}
+
+
