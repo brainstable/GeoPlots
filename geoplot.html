@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="author" content="Мозговой Сергей">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">  
+        <title>Сортоучастки</title>
+
+        <link rel="stylesheet" href="lib/style.css">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+        <script src="data/plots.js"></script>
+        <script src="lib/func.js"></script>
+        <script src="lib/style.js"></script>
+        <script src="lib/oef.js"></script>
+        <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+        <script src="data/plots.geojson" type="text/javascript"></script>
+        <script src="data/fields.geojson" type="text/javascript"></script>
+        <script src="data/cultures.geojson" type="text/javascript"></script>
+        <script src="data/roads.geojson" type="text/javascript"></script>
+        <script src="data/forestbelts.geojson" type="text/javascript"></script>
+    </head>
+    <body>
+        <div id='map'></div>
+        <script>
+            
+            //=========================================
+            //                       Карта
+            //=========================================
+            var arr = data;
+            var code = getAllUrlParams().gsu;
+            var plot = arr[code];
+            var centerPlot = [plot.lat, plot.lon];
+            var mapInfo = plot.region + '</br>' + plot.gsu;
+
+            var delta = 0.08;
+            var centerMap = L.latLng(centerPlot); // Координаты центра
+            var topMap = L.latLng(centerMap.lat - delta, centerMap.lng - delta);
+            var downMap = L.latLng(centerMap.lat + delta, centerMap.lng + delta);
+
+            // Опции карты
+            var mapOptions = {
+                center: centerMap, // центр
+                //minZoom: 12,       // минимальный зум
+                maxZoom: 19,       // максимальный зум
+                zoom: 14,          // зум инициализации
+                attributionControl: true,
+                zoomControl: true,
+                //maxBounds: [ topMap, downMap ]   // ограничивающий экстент
+            }
+
+            // Инициализация карты
+            var map = L.map('map', mapOptions);
+
+            // ==============================================================  
+            //                   Подложка Google
+            // ==============================================================  
+            var filial = '<b>2020 &copy; Филиал ФГБУ &quot;Госсорткомиссия&quot; по Красноярскому краю, Республике Хакасия и Республике Тыва<b>';
+
+            var googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
+                    maxZoom: 19,
+                    subdomains:['mt0','mt1','mt2','mt3'],
+                    attribution: filial
+                }).addTo(map); 
+
+            //=============================================
+            //           СЛОИ
+            //=============================================
+            // Слой сортоучастка
+            var fullLayer = L.geoJson(plots,{
+                style: fullStyle,
+                onEachFeature: fullOnEachFeature
+            }).addTo(map);
+            
+            // Слой дорог
+            var roadLayer = L.geoJson(roads, {
+                style:roadStyle
+                })
+                //.addTo(map);
+            
+            // Слой полей
+            var fieldLayer = L.geoJson(fields, {
+                style: fieldStyle,
+                onEachFeature: fieldOnEachFeature
+            })
+           // .addTo(map);
+
+            // Слой культур
+            var cultureLayer = L.geoJson(cultures, {
+                style: cultureStyleColor,
+                onEachFeature: cultureOnEachFeature
+            })
+            //.addTo(map);
+            
+            // Добавление контрола масштаба
+            L.control.scale().addTo(map);
+            //========================================
+
+            var info = L.control({position: 'bottomright'});
+            info.onAdd = function (map) {
+                this._div = L.DomUtil.create('div', 'info'); 
+                this.update();
+                return this._div;
+            };
+            info.update = function (props) {
+                this._div.innerHTML = mapInfo;
+            };
+
+            info.addTo(map);
+
+            //---------------------------
+            var back = L.control({position: 'bottomleft'});
+            
+            back.onAdd = function (map) {
+                this._div = L.DomUtil.create('div', 'card btn btn-primary'); 
+                this.update();
+                return this._div;
+            };
+
+            back.update = function (props) {
+                this._div.innerHTML = '<a href="index.html" title="Перейти на главную страницу">Назад</a>';
+            };
+            back.addTo(map);
+
+            //================================================
+            //
+            //================================================
+            var overlayMaps = {
+                "Границы сортоучастка" : fullLayer,
+                "Границы полей (участков)": fieldLayer,
+                "Культуры 2020 года": cultureLayer,
+                "Дороги" : roadLayer
+                
+            };
+            L.control.layers(overlayMaps).addTo(map);
+            L.control.layers([], overlayMaps).addTo(map);
+        </script>
+    </body>
+</html>
