@@ -27,13 +27,11 @@
     <body>
         <div id='map'></div>
         <script>
-            
             //=========================================
             //                       Карта
             //=========================================
-            var arr = data;
-            var code = getAllUrlParams().gsu;
-            var plot = arr[code];
+            var plotId = getAllUrlParams().gsu;
+            var plot = data[plotId];
             var centerPlot = [plot.lat, plot.lon];
             var mapInfo = plot.region + '</br>' + plot.gsu;
 
@@ -87,7 +85,7 @@
                 style: fieldStyle,
                 onEachFeature: fieldOnEachFeature
             })
-           // .addTo(map);
+            //.addTo(map);
 
             // Слой культур
             var cultureLayer = L.geoJson(cultures, {
@@ -109,18 +107,16 @@
             info.update = function (props) {
                 this._div.innerHTML = mapInfo;
             };
-
             info.addTo(map);
 
             //---------------------------
+
             var back = L.control({position: 'bottomleft'});
-            
             back.onAdd = function (map) {
                 this._div = L.DomUtil.create('div', 'card btn btn-primary'); 
                 this.update();
                 return this._div;
             };
-
             back.update = function (props) {
                 this._div.innerHTML = '<a href="index.html" title="Перейти на главную страницу">Назад</a>';
             };
