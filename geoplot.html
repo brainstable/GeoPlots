@@ -33,7 +33,7 @@
             var plotId = getAllUrlParams().gsu;
             var plot = data[plotId];
             var centerPlot = [plot.lat, plot.lon];
-            var mapInfo = plot.region + '</br>' + plot.gsu;
+            var mapInfo = plot.region + '</br>' + plot.gsu + '</br>' + plot.zone;
 
             var delta = 0.08;
             var centerMap = L.latLng(centerPlot); // Координаты центра
