@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="author" content="Мозговой Сергей">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">  
+        <title>Сортоучастки</title>
+
+        <link rel="stylesheet" href="lib/style.css">
+        <link rel="stylesheet" type="text/css" href="styleControls.css"></li>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+        <script src="data/plots.js"></script>
+        <script src="lib/func.js"></script>
+        <script src="lib/style.js"></script>
+        <script src="lib/oef.js"></script>
+        <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script type="text/javascript" src="lib/controls.js"></script>
+
+        <script src="data/plots.geojson" type="text/javascript"></script>
+        <script src="data/fields.geojson" type="text/javascript"></script>
+        <script src="data/cultures.geojson" type="text/javascript"></script>
+        <script src="data/roads.geojson" type="text/javascript"></script>
+        <script src="data/forestbelts.geojson" type="text/javascript"></script>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-3">
+                    <h4>Сортоучастки</h4>
+                        <div style="overflow-y: scroll;">
+                            <div class="list-group-item list-group-item-action active mx-auto">
+                                    КРАСНОЯРСКИЙ КРАЙ
+                                </div>
+                                    <a href="geoplot.html?gsu=803" class="list-group-item list-group-item-action mx-auto">Восточно-Сибирский ГСУ</a>
+                                    <a href="geoplot.html?gsu=65" class="list-group-item list-group-item-action mx-auto">Дзержинский ГСУ</a>    
+                                    <a href="geoplot.html?gsu=68" class="list-group-item list-group-item-action mx-auto">Казачинский ГСУ</a>
+                                    <a href="geoplot.html?gsu=71" class="list-group-item list-group-item-action mx-auto">Каратузский ГСУ</a>
+                                    <a href="geoplot.html?gsu=73" class="list-group-item list-group-item-action mx-auto">Краснотуранский ГСУ</a>
+                                    <a href="geoplot.html?gsu=76" class="list-group-item list-group-item-action mx-auto">Минусинский ГСУ</a>
+                                    <a href="geoplot.html?gsu=77" class="list-group-item list-group-item-action mx-auto">Назаровский ГСУ</a>
+                                    <a href="geoplot.html?gsu=78" class="list-group-item list-group-item-action mx-auto">Новоселовский ГСУ</a>
+                                    <a href="geoplot.html?gsu=79" class="list-group-item list-group-item-action mx-auto">Саянский ГСУ</a>
+                                    <a href="geoplot.html?gsu=81" class="list-group-item list-group-item-action mx-auto">Сухобузимский ГСУ</a>
+                                    <a href="geoplot.html?gsu=85" class="list-group-item list-group-item-action mx-auto">Ужурский ГСУ</a>
+                                    <a href="geoplot.html?gsu=87" class="list-group-item list-group-item-action mx-auto">Уярский ГСУ</a>
+                                    <a href="geoplot.html?gsu=8702" class="list-group-item list-group-item-action mx-auto">Уярский ГСУ (землепользование птицефабрики 'Заря')</a>
+                                    <a href="geoplot.html?gsu=89" class="list-group-item list-group-item-action mx-auto">Шушенский овощной ГСУ</a>
+                                    <a href="geoplot.html?gsu=728" class="list-group-item list-group-item-action mx-auto">Шушенский плодово-ягодный ГСУ</a>
+
+                                <div class="list-group-item list-group-item-action active mx-auto">
+                                    РЕСПУБЛИКА ХАКАСИЯ
+                                </div>
+                                    <a href="geoplot.html?gsu=62" class="list-group-item list-group-item-action mx-auto">Бейский ГСУ</a>
+                                    <a href="geoplot.html?gsu=88" class="list-group-item list-group-item-action mx-auto">Ширинский ГСУ</a>
+                                <div class="list-group-item list-group-item-action active mx-auto">
+                                    РЕСПУБЛИКА ТЫВА
+                                </div>
+                                    <a href="geoplot.html?gsu=672" class="list-group-item list-group-item-action mx-auto">Пий-Хемский ГСУ</a>
+                            </div>
+                        </div>
+                    <div class="col-md-9" id="map" style="height:6in;">
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+        <script>
+            //=========================================
+            //                       Карта
+            //=========================================
+
+
+            var plotId = getAllUrlParams().gsu;
+            var plot = data[plotId];
+            var centerPlot = [plot.lat, plot.lon];
+            var mapInfo = plot.region + '</br>' + plot.gsu + '</br>' + plot.zone;
+
+            var delta = 0.08;
+            var centerMap = L.latLng(centerPlot); // Координаты центра
+            var topMap = L.latLng(centerMap.lat - delta, centerMap.lng - delta);
+            var downMap = L.latLng(centerMap.lat + delta, centerMap.lng + delta);
+
+            // Опции карты
+            var mapOptions = {
+                center: centerMap, // центр
+                //minZoom: 12,       // минимальный зум
+                //maxZoom: 19,       // максимальный зум
+                zoom: 14,          // зум инициализации
+                attributionControl: true,
+                zoomControl: true,
+                //maxBounds: [ topMap, downMap ]   // ограничивающий экстент
+            }
+
+            // Инициализация карты
+            var map = L.map('map', mapOptions);
+
+            // ==============================================================  
+            //                   Подложка Google
+            // ==============================================================  
+            var filial = '<b>' + new Date().getFullYear() + ' &copy; Филиал ФГБУ &quot;Госсорткомиссия&quot; по Красноярскому краю, Республике Хакасия и Республике Тыва<b>';
+
+            /*
+            var googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
+                    maxZoom: 19,
+                    subdomains:['mt0','mt1','mt2','mt3'],
+                    attribution: filial
+                }).addTo(map); 
+                */
+
+            var mapbox = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiYnJhaW5zdGFibGUiLCJhIjoiY2s3anJiOWtuMHZ5eTNlbzJlNnFsc2lybCJ9.fq5X8__oGOwe4gYP6WP3NA', {
+                    maxZoom: 18,
+                    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+                    '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                    'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+                    id: 'mapbox.satellite'
+                }).addTo(map);
+
+            //=============================================
+            //           СЛОИ
+            //=============================================
+            // Слой сортоучастка
+            var fullLayer = L.geoJson(plots,{
+                style: fullStyle,
+                onEachFeature: fullOnEachFeature
+            })
+            .addTo(map);
+            
+            // Слой дорог
+            var roadLayer = L.geoJson(roads, {
+                style:roadStyle
+                })
+                //.addTo(map);
+            
+            // Слой полей
+            var fieldLayer = L.geoJson(fields, {
+                style: fieldStyle,
+                onEachFeature: fieldOnEachFeature
+            })
+            .addTo(map);
+
+            // Слой культур
+            var cultureLayer = L.geoJson(cultures, {
+                style: cultureNameStyleColor,
+                onEachFeature: cultureOnEachFeature
+            })
+            .addTo(map);
+            
+            //========================================
+            // Добавление контрола масштаба
+            //L.control.scale().addTo(map);
+			//========================================
+            
+
+            //========================================
+
+            var info = L.control({position: 'bottomleft'});
+            info.onAdd = function (map) {
+                this._div = L.DomUtil.create('div', 'info'); 
+                this.update();
+                return this._div;
+            };
+            info.update = function (props) {
+                this._div.innerHTML = mapInfo;
+            };
+            info.addTo(map);
+
+            //---------------------------
+            /*
+            var back = L.control({position: 'bottomleft'});
+            back.onAdd = function (map) {
+                this._div = L.DomUtil.create('div', 'card btn btn-primary'); 
+                this.update();
+                return this._div;
+            };
+            back.update = function (props) {
+                this._div.innerHTML = '<a href="index.html" title="Перейти на главную страницу">Назад</a>';
+            };
+            back.addTo(map);
+            */
+            //========================================
+            // Добавление легенды
+            //========================================
+            /*Legend specific*/
+			var legend = L.control({ position: "bottomright" });
+
+			legend.onAdd = function(map) {
+			  var div = L.DomUtil.create("div", "legend");
+			  div.innerHTML += "<h4>Культуры</h4>";
+              div.innerHTML += '<i style="background: DarkOrchid"></i><span>Донник</span><br>';
+              div.innerHTML += '<i style="background: DarkOrchid"></i><span>Гречиха</span><br>';
+              div.innerHTML += '<i style="background: ForestGreen"></i><span>Кукуруза</span><br>';
+              div.innerHTML += '<i style="background: DarkOrchid"></i><span>Лен масличный</span><br>';
+              div.innerHTML += '<i style="background: OrangeRed"></i><span>Овес яровой</span><br>';
+              div.innerHTML += '<i style="background: black"></i><span>Пар черный</span><br>';
+              div.innerHTML += '<i style="background: DarkOrchid"></i><span>Пшеница озимая</span><br>';
+              div.innerHTML += '<i style="background: yellow"></i><span>Пшеница яровая</span><br>';
+              div.innerHTML += '<i style="background: DarkOrchid"></i><span>Рапс яровой</span><br>';
+              div.innerHTML += '<i style="background: DarkOrchid"></i><span>Рожь озимая</span><br>';
+              div.innerHTML += '<i style="background: DarkOrchid"></i><span>Соя</span><br>';
+			  div.innerHTML += '<i style="background: LawnGreen"></i><span>Эспарцет</span><br>';
+              div.innerHTML += '<i style="background: Magenta"></i><span>Ячмень яровой</span><br>';
+			  return div;
+			};
+
+			legend.addTo(map);
+
+            //================================================
+            //
+            //================================================
+            var overlayMaps = {
+                "Границы сортоучастка" : fullLayer,
+                "Границы полей (участков)": fieldLayer,
+                "Культуры 2020 года": cultureLayer,
+                "Дороги" : roadLayer
+                
+            };
+            //L.control.layers(overlayMaps).addTo(map);
+            L.control.layers([], overlayMaps).addTo(map);
+        </script>
+    </body>
+</html>

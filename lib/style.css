@@ -41,4 +41,103 @@ h3 {
     color: #777;
 }
 
+/*Legend specific*/
+.legend {
+  padding: 6px 8px;
+  font: 14px Arial, Helvetica, sans-serif;
+  background: white;
+  background: rgba(255, 255, 255, 0.8);
+  /*box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);*/
+  /*border-radius: 5px;*/
+  line-height: 24px;
+  color: black;
+  visibility: hidden;
+}
+.legend h4 {
+  text-align: center;
+  font-size: 16px;
+  margin: 2px 12px 8px;
+  color: black;
+}
 
+.legend span {
+  position: relative;
+  bottom: 3px;
+}
+
+.legend i {
+  width: 18px;
+  height: 18px;
+  float: left;
+  margin: 0 8px 0 0;
+  opacity: 1;
+  outline: 1px solid #000;
+}
+
+.legend i.icon {
+  background-size: 18px;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+/* Controls positions*/
+.leaflet-verticalcenter {
+    position: absolute;
+    z-index: 1000;
+    pointer-events: none;
+    top: 50%; /* possible because the placeholder's parent is the map */
+    transform: translateY(-50%); /* using the CSS3 Transform technique */
+    padding-top: 10px;
+}
+
+.leaflet-verticalcenter .leaflet-control {
+    margin-bottom: 10px;
+}
+
+/* ======================*/
+/*Wraperclass for the divicon*/
+.map-label {
+  position: absolute;
+  bottom: 0;left: -50%;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+/*Wrap the content of the divicon (text) in this class*/
+.map-label-content {
+  order: 1;
+  position: relative; left: -50%;
+  background-color: #fff;
+  border-radius: 5px;
+  border-width: 2px;
+  border-style: solid;
+  border-color: #444;
+  padding: 3px;
+  white-space: nowrap;
+}
+/*Add this arrow*/
+.map-label-arrow {
+  order: 2;
+  width: 0px; height: 0px; left: 50%;
+  border-style: solid;
+  border-color: #444 transparent transparent transparent;
+  border-width: 10px 6px 0 6px; /*[first number is height, second/fourth are rigth/left width]*/
+  margin-left: -6px;
+}
+
+/*Instance classes*/
+.map-label.inactive {
+  opacity: 0.5;
+}
+
+.map-label.redborder > .map-label-content {
+  border-color: #e00;
+}
+.map-label.redborder > .map-label-arrow {
+  border-top-color: #e00;
+}
+
+.map-label.redbackground > .map-label-content {
+  white-space: default;
+  color: #fff;
+  background-color: #e00;
+}
